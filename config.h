@@ -6,13 +6,13 @@
 
 typedef struct TConfig
 {
-    char    *server_ip;
-    uint16_t server_port;
-    char    *dns;
-    uint16_t dns_port;
-    uint32_t cache_time;
-    uint8_t  debug_level;
-    char    *data;
+    char      *server_ip;
+    uint16_t  server_port;
+    char      *dns_ip;
+    uint16_t  dns_port;
+    uint32_t  cache_time;
+    uint8_t   debug_level;
+    char      *data;
 } TConfig;
 
 extern TConfig config;
