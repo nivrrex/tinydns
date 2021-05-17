@@ -18,7 +18,7 @@ char* config_param(char* s, void* res, unsigned int type)
             case 2: if (*s == '"') { state = 3; *(char**)res = s+1; } break;
             case 3: if (*s == '"') { state = 4; *s = 0; }             break;
             case 4: return s;
-            case 5: if (*s >= '0' && *s <= '9') { state = 4; sscanf(s, "%d", &x); *(uint16_t*)res = x; } break;
+ 			case 5: if (*s >= '0' && *s <= '9') { state = 4; sscanf(s, "%d", &x); *(int*)res = x; return(s); } break;
             // add query/answer from config
             case 6: if (*s == ']') state = 4; if (*s == '"') { state = 7; rr_ptr = rr_dot = s; x = 0; } break;
             case 7:
@@ -75,7 +75,7 @@ void config_parse(char* s)
     {
         if (memcmp(ptr, "server_ip",   9) == 0) ptr = config_param(ptr, &config.server_ip,   CONFIG_TYPE_STRING);
         if (memcmp(ptr, "server_port",11) == 0) ptr = config_param(ptr, &config.server_port, CONFIG_TYPE_INT);
-        if (memcmp(ptr, "dns",         3) == 0) ptr = config_param(ptr, &config.dns,         CONFIG_TYPE_STRING);
+        if (memcmp(ptr, "dns_ip",      6) == 0) ptr = config_param(ptr, &config.dns_ip,      CONFIG_TYPE_STRING);
         if (memcmp(ptr, "dns_port",    8) == 0) ptr = config_param(ptr, &config.dns_port,    CONFIG_TYPE_INT);
         if (memcmp(ptr, "cache_time", 10) == 0) ptr = config_param(ptr, &config.cache_time,  CONFIG_TYPE_INT);
         if (memcmp(ptr, "debug_level",11) == 0) ptr = config_param(ptr, &config.debug_level, CONFIG_TYPE_INT);
@@ -103,4 +103,5 @@ void config_load()
     fclose(f);
 
     config_parse(config.data);
+ 	printf("bind on %s:%d; parent: %s:%d\n", config.server_ip, config.server_port,config.dns_ip,config.dns_port);
 }
