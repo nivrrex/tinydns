@@ -1,5 +1,11 @@
 CC = gcc
-main: main.o cache.o config.o parse.o log.o help.o
-	CC -o tinydns *.o
+CFLAGS = -Wall -Wextra -O2
+SRCS = main.o cache.o config.o parse.o log.o help.o
+OBJS = $(SRCS:.c=.o)
+MAIN = tinydns
+
+$(MAIN): $(OBJS)
+	$(CC) $(CFLAGS) -s -o $(MAIN) $(OBJS)
+
 clean:
-	rm -f *.o tinydns
+	$(RM) *.o $(MAIN)
