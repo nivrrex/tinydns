@@ -103,5 +103,5 @@ void config_load()
     fclose(f);
 
     config_parse(config.data);
- 	printf("bind on %s:%d; parent: %s:%d\n", config.server_ip, config.server_port,config.dns_ip,config.dns_port);
+ 	printf("local bind on: %s:%d\nremote server: %s:%d\n\n", config.server_ip, config.server_port,config.dns_ip,config.dns_port);
 }
