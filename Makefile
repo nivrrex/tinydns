@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O2
+CFLAGS = -std=gnu99  -O2
 SRCS = main.o cache.o config.o parse.o log.o help.o
 OBJS = $(SRCS:.c=.o)
 MAIN = tinydns
