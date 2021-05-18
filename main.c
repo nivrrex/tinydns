@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 	struct epoll_event ev, events[MAX_EVENT_NUM];
 	epfd = epoll_create(MAX_EVENT_NUM);
     memset(&ev, 0, sizeof(ev));
-    ev.events = EPOLLIN | EPOLLET | EPOLLONESHOT ;
+    ev.events = EPOLLIN ;
     ev.data.fd = sock;
     rc = epoll_ctl(epfd, EPOLL_CTL_ADD, sock, &ev);
     if(rc < 0)
@@ -220,7 +220,7 @@ int main(int argc, char **argv)
             }
 
             memset(&ev, 0, sizeof(ev));
-            ev.events = EPOLLIN | EPOLLET | EPOLLONESHOT ;
+            ev.events = EPOLLIN ;
             ev.data.fd = sockfd;
             rc = epoll_ctl(epfd, EPOLL_CTL_MOD, sockfd, &ev);
             if(rc < 0)
