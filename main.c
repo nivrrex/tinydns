@@ -1,29 +1,71 @@
 // @url RFC 1035 https://tools.ietf.org/html/rfc1035
 
 #include "common.h"
-#include <sys/epoll.h>
+#include <sys/epoll.h> // for epoll
 #include <netdb.h>
+#include <pthread.h> // for thread
 #define MAX_EVENT_NUM 256
 
-char version[] = "0.4.1";
+char version[] = "0.4.2";
 unsigned char buf[0xFFF];
 struct epoll_event ev, events[MAX_EVENT_NUM];
 
 void error(char *msg) { log_s(msg); perror(msg); exit(1); }
 
+uint16_t  cache_id;
+uint16_t  send_len;
+uint16_t  *ans = NULL;
+
+int                 in_addr_len;
+struct sockaddr_in6 in_addr;
+
+int                out_socket;
+int                out_addr_len;
+struct sockaddr_in out_addr;
+int nfds,sockfd,rc;
+
+void *query_dns()
+{
+    int16_t  i,n;
+    if (!ans)
+    {
+        out_addr_len = sizeof(out_addr);
+        n = sendto(out_socket, buf, send_len, 0, (struct sockaddr *) &out_addr,  out_addr_len);
+        if (n < 0) { log_s("ERROR in sendto");  }
+
+        int ck = 0;
+        uint32_t pow, i;
+        while (++ck < 13)
+        {
+            pow = 1; for (i=0; i<ck; i++) pow <<= 1;
+            usleep(pow * 1000);
+            n = recvfrom(out_socket, buf, sizeof(buf), MSG_DONTWAIT, (struct sockaddr *) &out_addr, &out_addr_len);
+            if (n < 0) continue;
+
+            cache_answer(buf, n);
+
+            log_b("<--P", buf, n);
+            if (cache_id != *((uint16_t*)buf)) continue;
+
+            ans = (uint16_t*)buf;
+            break;
+        }
+        if (!ck) log_s("<--P no answer");
+        send_len = n;
+    }
+
+    // send answer back
+    if (ans)
+    {
+        n = sendto(sockfd, ans, send_len, 0, (struct sockaddr *) &in_addr, in_addr_len);
+        if (n < 0) log_s("ERROR in sendto back");
+    }
+    pthread_exit(NULL);
+}
+
 void loop(int epfd)
 {
-    int16_t   i, n;
-    uint16_t  id;
-    uint16_t  *ans = NULL;
-
-    int                 in_addr_len;
-    struct sockaddr_in6 in_addr;
-
-    int                out_socket;
-    int                out_addr_len;
-    struct sockaddr_in out_addr;
-
+    int16_t  i,n;
     memset((char *) &out_addr, 0, sizeof(out_addr));
     out_addr.sin_family = AF_INET;
     out_addr.sin_port   = htons(config.dns_port);
@@ -31,7 +73,6 @@ void loop(int epfd)
     out_socket = socket(AF_INET, SOCK_DGRAM, 0);
     if (out_socket < 0) error("ERROR opening socket out");
 
-    int nfds,sockfd,rc;
     while (1)
     {
         nfds = epoll_wait(epfd, events, MAX_EVENT_NUM, 500);
@@ -60,50 +101,30 @@ void loop(int epfd)
 
             parse_buf((THeader*)buf);
 
-            id = *((uint16_t*)buf);
+            cache_id = *((uint16_t*)buf);
 
             log_b("Q-->", buf, n);
 
             if (ans = (uint16_t *)cache_search(buf, &n))
             {
-                ans[0] = id;
+                ans[0] = cache_id;
                 log_b("<--C", ans, n);
             }
             else
                 cache_question(buf, n);
+            send_len = n;
 
+            pthread_attr_t attr;
+            pthread_attr_init(&attr);
+            pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+            pthread_t tid;
             // resend to parent
-            if (!ans)
-            {
-                out_addr_len = sizeof(out_addr);
-                n = sendto(out_socket, buf, n, 0, (struct sockaddr *) &out_addr,  out_addr_len);
-                if (n < 0) { log_s("ERROR in sendto");  }
-
-                int ck = 0;
-                uint32_t pow, i;
-                while (++ck < 13)
-                {
-                    pow = 1; for (i=0; i<ck; i++) pow <<= 1;
-                    usleep(pow * 1000);
-                    n = recvfrom(out_socket, buf, sizeof(buf), MSG_DONTWAIT, (struct sockaddr *) &out_addr, &out_addr_len);
-                    if (n < 0) continue;
-
-                    cache_answer(buf, n);
-
-                    log_b("<--P", buf, n);
-                    if (id != *((uint16_t*)buf)) continue;
-
-                    ans = (uint16_t*)buf;
-                    break;
-                }
-                if (!ck) log_s("<--P no answer");
-            }
-
-            // send answer back
-            if (ans)
-            {
-                n = sendto(sockfd, ans, n, 0, (struct sockaddr *) &in_addr, in_addr_len);
-                if (n < 0) log_s("ERROR in sendto back");
+            int err;
+            err = pthread_create(&tid, &attr, query_dns, NULL);
+            if(err != 0) {
+                char s[0xFF];
+                sprintf(s, "\n can't create thread:[%s]", strerror(err));
+                error(s);
             }
 
             memset(&ev, 0, sizeof(ev));
