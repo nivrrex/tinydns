@@ -5,7 +5,7 @@ OBJS = $(SRCS:.c=.o)
 MAIN = tinydns
 
 $(MAIN): $(OBJS)
-	$(CC) $(CFLAGS) -s -o $(MAIN) $(OBJS)
+	$(CC) $(CFLAGS) -s -o $(MAIN) $(OBJS) -lpthread
 
 clean:
 	$(RM) *.o $(MAIN)
