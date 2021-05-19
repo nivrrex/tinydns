@@ -89,7 +89,7 @@ void config_load()
     FILE* f;
     f = fopen("tinydns.conf", "rb");
     if (!f)
-    f = fopen("/etc/tinydns/tinydns.conf", "rb");
+    f = fopen("/etc/tinydns.conf", "rb");
     if (!f) return;
 
     fseek(f, 0, SEEK_END);
