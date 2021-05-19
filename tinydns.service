@@ -3,7 +3,7 @@ Description=tiny DNS cache service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/tinydns -d
+ExecStart=/usr/bin/tinydns
 KillMode=mixed
 Restart=on-failure
 Type=forking
