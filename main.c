@@ -118,7 +118,6 @@ void loop(int epfd)
 
 int hostname_to_ip(char *hostname, char *ip, int len)
 {
-    int sockfd;
     struct addrinfo hints;
     struct addrinfo *servinfo;
     struct addrinfo *p;
