@@ -242,19 +242,7 @@ int main(int argc, char **argv)
         exit(0);
     }
 
-    if (argv[1] && 0 == strcmp(argv[1], "-d"))
-    {
-        pid_t pid = fork();
-        if (pid < 0)
-        {
-            if (pid < 0) error("Can't create daemon!");
-            exit(1);
-        }
-        if (pid > 0) exit(0); // exit from current process
-    }
-    else
-        config.debug_level = 1;
-
+    config.debug_level = 1;
     config_load();
     int epfd = server_init();
     loop(epfd);
