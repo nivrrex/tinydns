@@ -59,7 +59,6 @@ void *query_dns()
         n = sendto(sockfd, ans, send_len, 0, (struct sockaddr *) &in_addr, in_addr_len);
         if (n < 0) log_s("ERROR in sendto back");
     }
-    pthread_exit(NULL);
 }
 
 void loop(int epfd)
