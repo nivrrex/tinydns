@@ -1,6 +1,6 @@
 #include "common.h"
 
-TConfig config = {"0.0.0.0", 53, "8.8.8.8", 53, 6*3600};
+TConfig config = {"0.0.0.0", 53, "8.8.8.8", 53, 6*3600, 1};
 
 char rr_buf[0xFFF] = {0};
 
