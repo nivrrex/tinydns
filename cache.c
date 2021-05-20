@@ -94,12 +94,14 @@ void* cache_search(void *_buf, uint16_t *n)
 			{
 				cache = ptr->next;
 				if (ptr->ans) free(ptr->ans);
+				if (ptr->ans_right) free(ptr->ans_right);
 				free(ptr);
 			}
 			else
 			{
 				ptr_prev->next = ptr->next;
 				if (ptr->ans) free(ptr->ans);
+				if (ptr->ans_right) free(ptr->ans_right);
 				free(ptr);
 			}
 			ptr = ptr_tmp;
