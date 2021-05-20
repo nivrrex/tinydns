@@ -1,8 +1,8 @@
 // @url RFC 1035 https://tools.ietf.org/html/rfc1035
 
 #include "common.h"
-#include <sys/epoll.h> // for epoll
 #include <netdb.h>
+#include <sys/epoll.h> // for epoll
 #include <pthread.h> // for thread
 #define MAX_EVENT_NUM 256
 
@@ -10,19 +10,18 @@ char version[] = "0.4.2";
 unsigned char buf[0xFFF];
 struct epoll_event ev, events[MAX_EVENT_NUM];
 
-void error(char *msg) { log_s(msg); perror(msg); exit(1); }
-
-uint16_t  cache_id;
-uint16_t  send_len;
-uint16_t  *ans = NULL;
-
-int                 in_addr_len;
-struct sockaddr_in6 in_addr;
-
-int                out_socket;
-int                out_addr_len;
-struct sockaddr_in out_addr;
+uint16_t cache_id;
+uint16_t send_len;
+uint16_t *ans = NULL;
 int nfds,sockfd,rc;
+
+struct sockaddr_in6 in_addr;
+struct sockaddr_in out_addr;
+int in_addr_len;
+int out_socket;
+int out_addr_len;
+
+void error(char *msg) { log_s(msg); perror(msg); exit(1); }
 
 void *query_dns()
 {
@@ -175,8 +174,8 @@ int server_init()
         config.server_ip = buf;
 
     // is ipv6?
-    int is_ipv6 = 0, j = 0;
-    while (config.server_ip[j]) if (config.server_ip[j++] == ':') { is_ipv6 = 1; break; }
+    int is_ipv6 = 0, i = 0;
+    while (config.server_ip[i]) if (config.server_ip[i++] == ':') { is_ipv6 = 1; break; }
 
     // create socket
     sock = socket(is_ipv6 ? AF_INET6 : AF_INET, SOCK_DGRAM, 0);
