@@ -117,7 +117,7 @@ void loop(int epfd)
             pthread_attr_init(&attr);
             pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
             pthread_t tid;
-            // resend to parent
+            // resend to remote server
             int err;
             err = pthread_create(&tid, &attr, query_dns, NULL);
             if(err != 0) {
