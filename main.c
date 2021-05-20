@@ -230,7 +230,7 @@ int main(int argc, char **argv)
 {
     if (argv[1] && 0 == strcmp(argv[1], "--version"))
     {
-        printf("tinydns %s\nAuthor: CupIvan <mail@cupivan.ru>\nEditor: Nivrrex <nivrrex@gmail.com>\nLicense: MIT\n", version);
+        printf("tinydns %s\nCompile Time: %s %s\nAuthor: CupIvan <mail@cupivan.ru>\nEditor: Nivrrex <nivrrex@gmail.com>\nLicense: MIT\n", version,__DATE__,__TIME__);
         exit(0);
     }
 
