@@ -12,6 +12,7 @@ typedef struct TConfig
     uint16_t  dns_port;
     uint32_t  cache_time;
     uint8_t   debug_level;
+    uint8_t   multi_thread;
     char      *data;
 } TConfig;
 
