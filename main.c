@@ -6,7 +6,7 @@
 #include <pthread.h> // for thread
 #define MAX_EVENT_NUM 256
 
-char version[] = "0.4.2";
+char version[] = "0.4.3";
 unsigned char buf[0xFFF];
 struct epoll_event ev, events[MAX_EVENT_NUM];
 
@@ -112,18 +112,24 @@ void loop(int epfd)
                 cache_question(buf, n);
             send_len = n;
 
-            pthread_attr_t attr;
-            pthread_attr_init(&attr);
-            pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-            pthread_t tid;
-            // resend to remote server
-            int err;
-            err = pthread_create(&tid, &attr, query_dns, NULL);
-            if(err != 0) {
-                char s[0xFF];
-                sprintf(s, "\n can't create thread:[%s]", strerror(err));
-                error(s);
+            //multi thread or single thread
+            if (config.multi_thread == 1 ){
+                pthread_attr_t attr;
+                pthread_attr_init(&attr);
+                pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+                pthread_t tid;
+                // resend to remote server
+                int err;
+                err = pthread_create(&tid, &attr, query_dns, NULL);
+                if(err != 0) {
+                    char s[0xFF];
+                    sprintf(s, "\n can't create thread:[%s]", strerror(err));
+                    error(s);
+                }
+            }else{
+                query_dns();
             }
+
 
             memset(&ev, 0, sizeof(ev));
             ev.events = EPOLLIN ;
