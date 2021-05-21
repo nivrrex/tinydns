@@ -245,7 +245,6 @@ int main(int argc, char **argv)
         exit(0);
     }
 
-    config.debug_level = 1;
     config_load();
     int epfd = server_init();
     loop(epfd);
