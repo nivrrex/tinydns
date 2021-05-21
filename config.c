@@ -1,6 +1,7 @@
 #include "common.h"
 
-TConfig config = {"0.0.0.0", 53, "8.8.8.8", 53, 6*3600};
+//server_ip,server_port, dns_ip,dns_port,cache_time,debug_level,multi_thread
+TConfig config = {"0.0.0.0", 53, "8.8.8.8", 53, 6*3600 ,1 ,1};
 
 char rr_buf[0xFFF] = {0};
 
@@ -73,13 +74,14 @@ void config_parse(char* s)
     char* ptr = s;
     while (*ptr)
     {
-        if (memcmp(ptr, "server_ip",   9) == 0) ptr = config_param(ptr, &config.server_ip,   CONFIG_TYPE_STRING);
-        if (memcmp(ptr, "server_port",11) == 0) ptr = config_param(ptr, &config.server_port, CONFIG_TYPE_INT);
-        if (memcmp(ptr, "dns_ip",      6) == 0) ptr = config_param(ptr, &config.dns_ip,      CONFIG_TYPE_STRING);
-        if (memcmp(ptr, "dns_port",    8) == 0) ptr = config_param(ptr, &config.dns_port,    CONFIG_TYPE_INT);
-        if (memcmp(ptr, "cache_time", 10) == 0) ptr = config_param(ptr, &config.cache_time,  CONFIG_TYPE_INT);
-        if (memcmp(ptr, "debug_level",11) == 0) ptr = config_param(ptr, &config.debug_level, CONFIG_TYPE_INT);
-        if (memcmp(ptr, "rr",          2) == 0) ptr = config_param(ptr, NULL,                CONFIG_TYPE_RR);
+        if (memcmp(ptr, "server_ip",     9) == 0) ptr = config_param(ptr, &config.server_ip,    CONFIG_TYPE_STRING);
+        if (memcmp(ptr, "server_port",  11) == 0) ptr = config_param(ptr, &config.server_port,  CONFIG_TYPE_INT);
+        if (memcmp(ptr, "dns_ip",        6) == 0) ptr = config_param(ptr, &config.dns_ip,       CONFIG_TYPE_STRING);
+        if (memcmp(ptr, "dns_port",      8) == 0) ptr = config_param(ptr, &config.dns_port,     CONFIG_TYPE_INT);
+        if (memcmp(ptr, "cache_time",   10) == 0) ptr = config_param(ptr, &config.cache_time,   CONFIG_TYPE_INT);
+        if (memcmp(ptr, "debug_level",  11) == 0) ptr = config_param(ptr, &config.debug_level,  CONFIG_TYPE_INT);
+        if (memcmp(ptr, "multi_thread", 12) == 0) ptr = config_param(ptr, &config.multi_thread, CONFIG_TYPE_INT);
+        if (memcmp(ptr, "rr",            2) == 0) ptr = config_param(ptr, NULL,                 CONFIG_TYPE_RR);
         ptr++;
     }
 }
@@ -103,5 +105,6 @@ void config_load()
     fclose(f);
 
     config_parse(config.data);
- 	printf("local bind on: %s:%d\nremote server: %s:%d\n\n", config.server_ip, config.server_port,config.dns_ip,config.dns_port);
+ 	printf("local bind on: %s:%d\nremote server: %s:%d\n", config.server_ip, config.server_port,config.dns_ip,config.dns_port);
+ 	printf("debug_level: %d\nmulti_thread: %d\n\n", config.debug_level, config.multi_thread);
 }
