@@ -21,6 +21,6 @@ This is a tiny DNS server with simple JSON config written in C.
 1. 原版基础上增加了端口的配置，可以在配置文件 /etc/tinydns.conf 中指定 
 2. 修改了Makefile文件，可以 make CC=arm-openwrt-linux-gcc 进行跨平台编译
 3. 本地侧修改为epoll方式实现
-4. 远程侧修改为多线程方式实现
+4. 远程侧修改为多线程方式实现，可以通过配置文件中 multi_thread 参数开启或关闭
 
 主要是用来做DNS缓存服务器用
