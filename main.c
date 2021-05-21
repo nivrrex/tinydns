@@ -119,8 +119,7 @@ void loop(int epfd)
                 pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
                 pthread_t tid;
                 // resend to remote server
-                int err;
-                err = pthread_create(&tid, &attr, query_dns, NULL);
+                int err = pthread_create(&tid, &attr, query_dns, NULL);
                 if(err != 0) {
                     char s[0xFF];
                     sprintf(s, "\n can't create thread:[%s]", strerror(err));
